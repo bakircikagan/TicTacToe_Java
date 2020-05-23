@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public final class EasyAIGame extends AIGame {
+public class EasyAIGame extends AIGame {
 
     public EasyAIGame(int s) {
         super(s);
@@ -8,7 +8,6 @@ public final class EasyAIGame extends AIGame {
 
     @Override
     public int[] position() {
-        int[] pos = new int[2];
         Random r = new Random();
         char[][] matrix = super.getMatrix();
         int size = matrix.length;
@@ -18,8 +17,6 @@ public final class EasyAIGame extends AIGame {
             x = r.nextInt(size);
             y = r.nextInt(size);
         }while(matrix[x][y] != '-');
-        pos[0] = x;
-        pos[1] = y;
-        return pos;
+        return new int[]{x, y};
     }
 }

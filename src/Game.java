@@ -3,10 +3,15 @@ import java.util.Set;
 
 public class Game implements Subject {
     // PROPERTIES
-    private char[][] matrix;
     private Set<Observer> observers;
     private int size;
     public static boolean XPlays = true;
+
+    // Protected variables for the AI game
+    private int turn;
+    private char[][] matrix;
+    private int diagonal1;
+    private int diagonal2;
 
     // CONSTRUCTORS
     public Game() {
@@ -22,6 +27,9 @@ public class Game implements Subject {
                 matrix[i][j] = '-';
             }
         }
+        turn = 0;
+        diagonal1 = 0;
+        diagonal2 = 0;
     }
 
     // METHODS
@@ -29,10 +37,20 @@ public class Game implements Subject {
         return false;
     }
 
-    public void play( int positionX, int positionY) {
+    public void play( int x, int y) {
+        if (matrix[x][y] != '-') {
+            throw new IllegalArgumentException("Playing to non empty space, position: " + x + ", " + y);
+        }
         char c = next();
-        matrix[positionX][positionY] = c;
+        matrix[x][y] = c;
         XPlays = !XPlays;
+        ++turn;
+        if (x == y) {
+            ++diagonal1;
+        }
+        if (x + y == size - 1) {
+            ++diagonal2;
+        }
         notifyObservers();
     }
 
@@ -112,10 +130,6 @@ public class Game implements Subject {
         return size;
     }
 
-    protected char[][] getMatrix() {
-        return matrix;
-    }
-
     @Override
     public void addObserver(Observer o) {
         observers.add(o);
@@ -130,4 +144,18 @@ public class Game implements Subject {
     public void notifyObservers() {
         observers.forEach(x -> x.update(this));
     }
+
+    protected char[][] getMatrix() {
+        return matrix;
+    }
+    protected int getTurn() { return turn; }
+
+    protected int getDiagonal1() {
+        return diagonal1;
+    }
+
+    protected int getDiagonal2() {
+        return diagonal2;
+    }
+
 }

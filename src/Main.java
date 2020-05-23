@@ -24,10 +24,7 @@ public final class Main extends JFrame implements ActionListener {
         easy = new JButton("EASY");
         hard = new JButton("HARD");
 
-        // mainPanel.add(human, FlowLayout.LEFT);
-        // mainPanel.add(easy, FlowLayout.CENTER);
-        // mainPanel.add(hard, FlowLayout.RIGHT);
-        mainPanel.setLayout(new GridLayout(1,3, 10, 10));
+        mainPanel.setLayout(new GridLayout(1,3, GAP, GAP));
         mainPanel.add(human);
         mainPanel.add(easy);
         mainPanel.add(hard);
@@ -38,6 +35,7 @@ public final class Main extends JFrame implements ActionListener {
 
         add(mainPanel);
         setSize(WIDTH,HEIGHT);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
     }

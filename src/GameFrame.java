@@ -80,6 +80,7 @@ public final class GameFrame extends JFrame implements Observer,ActionListener {
 
         add(mainPanel);
         setSize(WIDTH,HEIGHT);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
 
