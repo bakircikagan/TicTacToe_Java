@@ -16,9 +16,11 @@ public final class Main extends JFrame implements ActionListener {
     private JButton human;
     private JButton easy;
     private JButton hard;
+    private final int size;
 
-    public Main() {
+    public Main(int size) {
         super("MENU");
+        this.size = size;
         mainPanel = new JPanel();
         human = new JButton("1-VS-1");
         easy = new JButton("EASY");
@@ -46,15 +48,15 @@ public final class Main extends JFrame implements ActionListener {
         if(source instanceof JButton) {
             JButton button = (JButton) source;
             GameFrame.GameType type = button == easy ? GameFrame.GameType.EASY_AI :
-                    ( button == hard ? GameFrame.GameType.HARD_AI :
-                            GameFrame.GameType.HUMAN);
-            new GameFrame(type);
+                                      button == hard ? GameFrame.GameType.HARD_AI :
+                                                       GameFrame.GameType.HUMAN;
+            new GameFrame(size, type);
             dispose();
         }
     }
 
     public static void main(String[] args) {
-        new Main();
+        new Main(3);
     }
 
 }

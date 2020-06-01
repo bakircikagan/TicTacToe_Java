@@ -6,12 +6,7 @@ public class Game implements Subject {
     private Set<Observer> observers;
     private int size;
     public static boolean XPlays = true;
-
-    // Protected variables for the AI game
-    private int turn;
     private char[][] matrix;
-    private int diagonal1;
-    private int diagonal2;
 
     // CONSTRUCTORS
     public Game() {
@@ -27,9 +22,6 @@ public class Game implements Subject {
                 matrix[i][j] = '-';
             }
         }
-        turn = 0;
-        diagonal1 = 0;
-        diagonal2 = 0;
     }
 
     // METHODS
@@ -44,14 +36,9 @@ public class Game implements Subject {
         char c = next();
         matrix[x][y] = c;
         XPlays = !XPlays;
-        ++turn;
-        if (x == y) {
-            ++diagonal1;
+        if (!this.isAIGame()) {
+            notifyObservers();
         }
-        if (x + y == size - 1) {
-            ++diagonal2;
-        }
-        notifyObservers();
     }
 
     public char next() {
@@ -148,14 +135,4 @@ public class Game implements Subject {
     protected char[][] getMatrix() {
         return matrix;
     }
-    protected int getTurn() { return turn; }
-
-    protected int getDiagonal1() {
-        return diagonal1;
-    }
-
-    protected int getDiagonal2() {
-        return diagonal2;
-    }
-
 }

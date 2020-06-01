@@ -1,38 +1,52 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.Timer;
 
 public final class GameFrame extends JFrame implements Observer,ActionListener {
-    //ENUM
+    // ENUM
     public enum GameType {HUMAN, EASY_AI, HARD_AI}
 
-    //CONSTANTS
+    // CONSTANTS
     private static final Font FONT_1 = new Font("Roman", Font.BOLD, 60);
     private static final Font FONT_2 = new Font("Roman", Font.BOLD, 40);
     private static final int WIDTH = 380;
     private static final int HEIGHT = 480;
+    private static final int DELAY = 1500;
 
-    //PROPERTIES
+    // PROPERTIES
     private JPanel mainPanel;
     private JLabel label;
     private JPanel northPanel;
     private JPanel centerPanel;
     private Pot[][] pots;
     private Game game;
+    private GameType type;
+    private Timer timer;
+    private final int size;
 
+    // Static Variables
     private static JRadioButton buttonX = new JRadioButton("X");
     private static JRadioButton buttonO = new JRadioButton("O");
     private static int scoreX = 0;
     private static int scoreO = 0;
-    private GameType type;
 
-    //CONSTRUCTORS
+    // CONSTRUCTORS
     public GameFrame(GameType type) {
         this(3, type);
     }
 
     public GameFrame(int size, GameType type) {
         super("Tic Tac Toe!");
+        this.size = size;
         pots = new Pot[size][size];
         mainPanel = new JPanel();
         northPanel = new JPanel();
@@ -63,7 +77,7 @@ public final class GameFrame extends JFrame implements Observer,ActionListener {
             for (int j = 0; j < pots[0].length; ++j) {
                 pots[i][j] = new Pot("", i, j);
                 pots[i][j].setFont(FONT_1);
-                pots[i][j].setBackground(Color.BLUE);
+                pots[i][j].setBackground(Color.CYAN);
                 pots[i][j].setForeground(Color.WHITE);
                 pots[i][j].addActionListener(this);
                 pots[i][j].setPreferredSize(new Dimension(120,120));
@@ -77,6 +91,7 @@ public final class GameFrame extends JFrame implements Observer,ActionListener {
         label.setFont(FONT_2);
         northPanel.setBackground(Color.YELLOW);
 
+        timer = new Timer(DELAY, this);
 
         add(mainPanel);
         setSize(WIDTH,HEIGHT);
@@ -90,27 +105,37 @@ public final class GameFrame extends JFrame implements Observer,ActionListener {
         if (!Game.XPlays) {
            game.notifyObservers();
         }
-
     }
 
-    //METHODS
+    // METHODS
     @Override
     public void update(Subject s) {
-        if (game.isOver()) {
+        boolean wonX = game.won('X');
+        boolean wonO = game.won('O');
+        boolean tie = game.tie();
+        if (wonX || wonO || tie) {
             if (game.won('X')) {
                 ++scoreX;
             }
             else if (game.won('O')) {
                 ++scoreO;
             }
-            dispose();
-            new GameFrame(type);
+            if (!tie || (wonX || wonO)) {
+                String str = wonX ? "X" : "O";
+                for (int i = 0; i < pots.length; ++i) {
+                    for (int j = 0; j < pots.length; ++j) {
+                        pots[i][j].setEnabled(false);
+                        if (pots[i][j].getText().equals(str)) {
+                            pots[i][j].setBackground(Color.GREEN);
+                        }
+                    }
+                }
+            }
+            timer.start();
         }
         else if (game.isAIGame() && !Game.XPlays) {
-            int[] pos = ((AIGame) game).position();
-            int x = pos[0];
-            int y = pos[1];
-            mark(pots[x][y]);
+            Position pos = ((AIGame) game).position();
+            mark(pots[pos.getX()][pos.getY()]);
         }
     }
 
@@ -127,9 +152,13 @@ public final class GameFrame extends JFrame implements Observer,ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         Object source = ae.getSource();
-        if(source instanceof Pot) {
+        if (source == timer) {
+            dispose();
+            new GameFrame(size, type);
+            timer.stop();
+        }
+        else if(source instanceof Pot) {
             mark((Pot)source);
         }
     }
-
 }
